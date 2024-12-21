@@ -1,21 +1,24 @@
 package com.example.picpay_desafio.transaction;
 
 import com.example.picpay_desafio.authorization.AuthorizerService;
-import com.example.picpay_desafio.exception.InvalidTransactionException;
+import com.example.picpay_desafio.notification.NotificationService;
 import com.example.picpay_desafio.wallet.WalletRepository;
 import com.example.picpay_desafio.wallet.WalletType;
 import org.springframework.transaction.annotation.Transactional;
 
 public class TransactionService {
     private final TransactionRepository transactionRepository;
-    private  final WalletRepository walletRepository;
+    private final WalletRepository walletRepository;
 
     private final AuthorizerService authorizerService;
 
-    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository, AuthorizerService authorizerService ) {
+    private final NotificationService notificationService;
+
+    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository, AuthorizerService authorizerService, NotificationService notificationService) {
         this.transactionRepository = transactionRepository;
         this.walletRepository = walletRepository;
         this.authorizerService = authorizerService;
+        this.notificationService = notificationService;
     }
 
     @Transactional // realizar a possibilidade de roolback se uma falhar vai receber o restante
@@ -24,7 +27,7 @@ public class TransactionService {
         validate(transaction);
 
         // 2 - create transaction
-       var newTransaction =  transactionRepository.save(transaction);
+        var newTransaction = transactionRepository.save(transaction);
 
         // 3 - debit the wallet
         var wallet = walletRepository.findById(transaction.payer()).get();
@@ -34,13 +37,15 @@ public class TransactionService {
 
         authorizerService.authorize(transaction);
 
+        notificationService.notify(transaction);
+
         return newTransaction;
     }
 
     /*
-    * - THE PAYER HAS A COMMON WALLET
-    * - THE PAYER HAS ENOUGH BALANCE IN THE WALLET
-    * - THE PAYER IS NOT THE PAYEE (YOU CANT SEND MONEY TO YOURSELF)
+     * - THE PAYER HAS A COMMON WALLET
+     * - THE PAYER HAS ENOUGH BALANCE IN THE WALLET
+     * - THE PAYER IS NOT THE PAYEE (YOU CANT SEND MONEY TO YOURSELF)
      */
 
     private void validate(Transaction transaction) {
@@ -53,7 +58,7 @@ public class TransactionService {
                 .orElseThrow(() -> new InvalidTransactionException("Payer wallet not found - %s".formatted(transaction)));
 
         if (payer.type() != WalletType.COMUM.getValue()) {
-            throw new InvalidTransactionException("Payer must have a common wallet" );
+            throw new InvalidTransactionException("Payer must have a common wallet");
         }
 
         if (payer.balance().compareTo(transaction.value()) < 0) {
