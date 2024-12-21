@@ -6,7 +6,7 @@ import org.springframework.web.client.RestClient;
 
 @Service
 public class AuthorizerService {
-    private RestClient restClient;
+    private final RestClient restClient;
 
     public AuthorizerService(RestClient.Builder builder) {
         this.restClient = builder
@@ -15,7 +15,13 @@ public class AuthorizerService {
     }
 
     public void authorize(Transaction transaction) {
-        restClient.get().retrieve().toEntity(Authorization.class);
+      var response =  restClient.get()
+              .retrieve()
+              .toEntity(Authorization.class);
+
+      if (response.getStatusCode().isError() || !response.getBody().isAuthorized()) {
+          throw new UnauthorizedTransactionException("Unauthorized transaction!");
+      }
 
     }
 
