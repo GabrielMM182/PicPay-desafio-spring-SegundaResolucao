@@ -6,6 +6,8 @@ import com.example.picpay_desafio.wallet.WalletRepository;
 import com.example.picpay_desafio.wallet.WalletType;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
@@ -14,7 +16,8 @@ public class TransactionService {
 
     private final NotificationService notificationService;
 
-    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository, AuthorizerService authorizerService, NotificationService notificationService) {
+    public TransactionService(TransactionRepository transactionRepository, WalletRepository walletRepository,
+                              AuthorizerService authorizerService, NotificationService notificationService) {
         this.transactionRepository = transactionRepository;
         this.walletRepository = walletRepository;
         this.authorizerService = authorizerService;
@@ -68,7 +71,9 @@ public class TransactionService {
         if (payer.id().equals(payee.id())) {
             throw new InvalidTransactionException("Payer cannot be the same as payee");
         }
+    }
 
-        //LOGGER.info("Transaction {} is valid", transaction);
+    public List<Transaction> list() {
+        return transactionRepository.findAll();
     }
 }
