@@ -4,10 +4,12 @@ import com.example.picpay_desafio.authorization.AuthorizerService;
 import com.example.picpay_desafio.notification.NotificationService;
 import com.example.picpay_desafio.wallet.WalletRepository;
 import com.example.picpay_desafio.wallet.WalletType;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
+@Service
 public class TransactionService {
     private final TransactionRepository transactionRepository;
     private final WalletRepository walletRepository;
