@@ -34,9 +34,13 @@ public class TransactionService {
         // 2 - create transaction
         var newTransaction = transactionRepository.save(transaction);
 
-        // 3 - debit the wallet
-        var wallet = walletRepository.findById(transaction.payer()).get();
-        walletRepository.save(wallet.debit(transaction.value()));
+        // 3 - debit the wallet and credit
+        var walletPayer = walletRepository.findById(transaction.payer()).get();
+        var walletPayee = walletRepository.findById(transaction.payee()).get();
+
+        walletRepository.save(walletPayer.debit(transaction.value()));
+        walletRepository.save(walletPayee.credit(transaction.value()));
+
 
         // 4 - call external apis like notify and verify
 

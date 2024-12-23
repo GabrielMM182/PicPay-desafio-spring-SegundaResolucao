@@ -34,7 +34,7 @@ public class NotificationConsumer {
                 throw new NotificationException("Failed to notify transaction: " + transaction);
 
             }
-            LOGGER.info("Notification sent successfully for transaction {}", transaction);
+            LOGGER.info("Notification sent successfully for transaction {}", response.getBody());
 
         } catch (RestClientException e) {
             LOGGER.error("Error while notifying transaction {}: {}", transaction, e.getMessage());
