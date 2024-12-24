@@ -14,23 +14,40 @@ public class AuthorizerService {
 
     public AuthorizerService(RestClient.Builder builder) {
         this.restClient = builder
-                .baseUrl("https://util.devi.tools/api/v2/authorize")
+                //.baseUrl("https://util.devi.tools/api/v2/authorize")
+                .baseUrl("http://localhost:8080/mock/authorization") // URL do mock
                 .build();
     }
 
     public void authorize(Transaction transaction) {
-        LOGGER.info("authorizing transaction {}...", transaction);
+        LOGGER.info("Authorizing transaction {}...", transaction);
 
-        var response =  restClient.get()
-              .retrieve()
-              .toEntity(Authorization.class);
+        var response = restClient.post()
+                .body(transaction) // Envia a transação para o mock
+                .retrieve()
+                .body(String.class); // Espera a resposta como String
 
-      if (response.getStatusCode().isError() || !response.getBody().isAuthorized()) {
-          throw new UnauthorizedTransactionException("Unauthorized transaction!");
-      }
-        LOGGER.info("Transaction authorized {}...", transaction);
+        if (!response.contains("success")) {
+            throw new UnauthorizedTransactionException("Unauthorized transaction!");
+        }
 
+        LOGGER.info("Transaction authorized successfully: {}...", transaction);
     }
+
+
+//    public void authorize(Transaction transaction) {
+//        LOGGER.info("authorizing transaction {}...", transaction);
+//
+//        var response =  restClient.get()
+//              .retrieve()
+//              .toEntity(Authorization.class);
+//
+//      if (response.getStatusCode().isError() || !response.getBody().isAuthorized()) {
+//          throw new UnauthorizedTransactionException("Unauthorized transaction!");
+//      }
+//        LOGGER.info("Transaction authorized {}...", transaction);
+//
+//    }
 
 
 }
