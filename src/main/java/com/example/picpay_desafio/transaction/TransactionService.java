@@ -2,12 +2,15 @@ package com.example.picpay_desafio.transaction;
 
 import com.example.picpay_desafio.authorization.AuthorizerService;
 import com.example.picpay_desafio.notification.NotificationService;
+import com.example.picpay_desafio.wallet.Wallet;
 import com.example.picpay_desafio.wallet.WalletRepository;
 import com.example.picpay_desafio.wallet.WalletType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 @Service
 public class TransactionService {
@@ -82,4 +85,8 @@ public class TransactionService {
     public List<Transaction> list() {
         return transactionRepository.findAll();
     }
+
+
+
+
 }
