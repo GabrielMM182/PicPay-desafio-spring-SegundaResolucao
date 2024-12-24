@@ -1,5 +1,7 @@
 package com.example.picpay_desafio.transaction;
 
+import com.example.picpay_desafio.wallet.Wallet;
+import com.example.picpay_desafio.wallet.WalletService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -9,9 +11,11 @@ import java.util.List;
 public class TransactionController {
 
     private final TransactionService transactionService;
+    private final WalletService walletService;
 
-    public TransactionController(TransactionService transactionService) {
+    public TransactionController(TransactionService transactionService, WalletService walletService) {
         this.transactionService = transactionService;
+        this.walletService = walletService;
     }
 
     @PostMapping
@@ -23,4 +27,10 @@ public class TransactionController {
     public List<Transaction> list() {
         return transactionService.list();
     }
+
+    @GetMapping("/wallets")
+    public List<Wallet> listWallet() {
+        return walletService.listWallets();
+    }
+
 }
