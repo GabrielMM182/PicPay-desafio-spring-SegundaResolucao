@@ -34,6 +34,7 @@ public class TransactionService {
         // 1 - validate
         validate(transaction);
 
+
         // 2 - create transaction
         var newTransaction = transactionRepository.save(transaction);
 
