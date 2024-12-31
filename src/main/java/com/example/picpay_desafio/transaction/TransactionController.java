@@ -24,11 +24,13 @@ public class TransactionController {
     }
 
     @GetMapping
+    @CrossOrigin
     public List<Transaction> list() {
         return transactionService.list();
     }
 
     @GetMapping("/wallets")
+    @CrossOrigin
     public List<Wallet> listWallet() {
         return walletService.listWallets();
     }
